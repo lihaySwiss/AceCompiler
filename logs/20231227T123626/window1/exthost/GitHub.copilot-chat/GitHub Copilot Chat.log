@@ -1,6 +1,0 @@
-2023-12-27 12:36:31.828 [info] [gitExtensionService] Initializing Git extension service.
-2023-12-27 12:36:31.828 [info] [gitExtensionService] Successfully activated the vscode.git extension.
-2023-12-27 12:36:31.828 [info] [gitExtensionService] Enablement state of the vscode.git extension: true.
-2023-12-27 12:36:31.828 [info] [gitExtensionService] Successfully registered Git commit message provider.
-2023-12-27 12:36:32.500 [info] [auth] GitHub login failed
-2023-12-27 12:36:32.505 [info] [extension] You are not signed in to GitHub. Please sign in to use Copilot.
