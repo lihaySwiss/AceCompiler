@@ -1,4 +1,5 @@
 #include "header/Lexer.h"
+#define COMMENT_SIGN '#'
 
 Lexer::Lexer(ifstream *file) {
     this->file = file;
@@ -7,13 +8,16 @@ Lexer::Lexer(ifstream *file) {
 void Lexer::readFromFile()
 {
     int i  = 0;
-    std::string currWord = " " ;
+    std::string skip;
+    std::string currWord = "" ;
 
     while((*file) >> currWord)
     {
-         // skip whitespace and comments
-        while(currWord[i] != '#' && !isspace(currWord[i]) && currWord[i] != ';') 
+         // skip whitespace
+        while(!isspace(currWord[i]) && currWord[i] != ';') 
         {
+            //getline((*file), skip, COMMENT_SIGN); //skip comments
+
             std::cout <<  getToken(currWord.substr(i)).type << std::endl;
             i++;
         }
@@ -25,5 +29,8 @@ void Lexer::readFromFile()
 
 Token Lexer::getToken(std::string currWord)
 {
- 
+    std::cout << currWord << std::endl;
+
+    
+    return t;
 }
