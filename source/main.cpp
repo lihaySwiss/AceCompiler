@@ -1,16 +1,14 @@
 
 #include "Lexer.cpp"
-//#include "header/Lexer.h"
+#include "DFA.cpp"
 
 int main(int argc, char const * argv[]) {
     
-    const char *FILE_PATH = "tests/test.ace";
-    ifstream file(FILE_PATH);
-    
-    Lexer *myLexer = new Lexer(&file);
-    myLexer->readFromFile();
+    std::string PATH_OF_DFA = "DFA/dfaFile.txt";
 
-    file.close();
-    delete(myLexer);
+    DFA *dfa = new DFA();
+
+    dfa->writeToFile(PATH_OF_DFA);
+
     return 0;
 }
