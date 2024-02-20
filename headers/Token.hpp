@@ -1,7 +1,8 @@
+#pragma once
 #include <iostream>
 
 struct Token
 {
     std::string token;
-    std::string type;
+    int type;
 } typedef Token;

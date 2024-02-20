@@ -1,7 +1,9 @@
 #include "../headers/DFA.hpp"
-#define MAT_PATH "DFA/dfa"
+#include <ctype.h>
+#include <string>
+#define MAT_PATH "./DFA/dfa"
 
-static unsigned int nextFreeState = 0;
+static int freeState = 1;
 
 DFA::DFA()
 {
@@ -15,17 +17,41 @@ DFA::DFA()
 
 void DFA::addTokens(const std::string &token)
 {
-    int i;
+    int i = 0;
+    int currState = 0;
 
-    for (i = 0; i <= token.size(); i++)
+    // Give all letters state of 1 that is identifier
+    if (freeState < 2)
     {
-        if(this->mat[nextFreeState][token[i]] == -1)
+        int alpha = 'a';
+
+        while (isalpha(alpha))
         {
-            this->mat[nextFreeState][token[i]] = nextFreeState;
-            nextFreeState++;
+            for(int j = 0; j < NUM_OF_STATES; j++)
+            {
+                mat[j][alpha] = freeState;
+            }
+            alpha++;
         }
+        freeState++;
     }
-    std::cout << token << ":" << nextFreeState << std::endl;
+
+    // Checking if the recived token is new 
+    // or a prefix of older token 
+    while (this->mat[currState][token[i]] != -1 && this->mat[currState][token[i]] != 1)
+    {
+        currState = mat[currState][token[i]];
+        i++;
+    }
+
+    // Making sure each state will point to the next
+    // state in the matrix(state machine)
+    for (; i < token.size(); i++)
+    {
+        mat[currState][token[i]] = freeState;
+        currState = freeState++;
+    }
+    freeState++;
 }
 
 bool DFA::writeToFile(const std::string &path)
@@ -37,7 +63,7 @@ bool DFA::writeToFile(const std::string &path)
     if (!file.is_open())
     {
         std::cerr << "Error opening file" << std::endl;
-        return false;
+        exit(1);
     }
 
     for (int i = 0; i < NUM_OF_STATES; i++)
@@ -56,13 +82,13 @@ bool DFA::readFromFile(const std::string &path)
     std::ifstream file;
     int i = 0, j = 0;
 
-    if(!file.is_open())
+    if (!file.is_open())
         file.open(path);
 
     if (!file.is_open())
     {
         std::cerr << "Error opening file" << std::endl;
-        return false;
+        exit(1);
     }
 
     while (file)
@@ -85,11 +111,6 @@ bool DFA::readFromFile(const std::string &path)
 
 void DFA::makeDFA()
 {
-    // Types
-    addTokens("char");
-    addTokens("int");
-    addTokens("bool");
-    addTokens("void");
 
     // Conditions
     addTokens("if");
@@ -98,6 +119,12 @@ void DFA::makeDFA()
     // Loops
     addTokens("while");
     addTokens("for");
+
+    // Variables
+    addTokens("char");
+    addTokens("int");
+    addTokens("bool");
+    addTokens("void");
 
     // Binop
     addTokens("/");
@@ -112,10 +139,15 @@ void DFA::makeDFA()
     addTokens("||");
     addTokens("~");
     addTokens("==");
+    addTokens("<=");
+    addTokens(">=");
+    
 
     // Special
     addTokens(":=");
     addTokens(";");
     addTokens("\'");
     addTokens("\"");
+    addTokens("(");
+    addTokens(")");
 }
