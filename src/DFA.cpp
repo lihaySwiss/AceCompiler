@@ -7,11 +7,8 @@ static int freeState = 1;
 
 DFA::DFA()
 {
-    for (size_t i = 0; i < NUM_OF_STATES; i++)
-        for (int j = 0; j < CHARS_NUM; j++)
-            this->mat[i][j] = -1;
-
     makeDFA();
+
     writeToFile(MAT_PATH);
 }
 
@@ -20,20 +17,29 @@ void DFA::addTokens(const std::string &token)
     int i = 0;
     int currState = 0;
 
-    // Give all letters state of 1 that is identifier
     if (freeState < 2)
     {
-        int alpha = 'a';
-
-        while (isalpha(alpha))
+         // Give all letters state of 1 that is identifier
+        for (int row = 0; row < NUM_OF_STATES; row++)
         {
-            for(int j = 0; j < NUM_OF_STATES; j++)
+            for(int col = 'a'; col < 'z'; col++)
             {
-                mat[j][alpha] = freeState;
+                mat[row][col] = freeState; 
             }
-            alpha++;
         }
         freeState++;
+
+
+        //give all numbers state of 2
+        for (int row = 0; row < NUM_OF_STATES; row++)
+        {
+            for(int col = '0'; col < '9'; col++)
+            {
+                mat[row][col] = freeState; 
+            }
+        }
+        freeState++;
+
     }
 
     // Checking if the recived token is new 
@@ -49,8 +55,23 @@ void DFA::addTokens(const std::string &token)
     for (; i < token.size(); i++)
     {
         mat[currState][token[i]] = freeState;
-        currState = freeState++;
+
+        //for debugging: print all keywords and their state
+        //std::cout << token << ":" << freeState << std::endl;
+
+        currState = freeState;
+        freeState++;
     }
+
+    //if state is not a keyword, turn all states in final state to -1
+    if(!isalpha(token[i-1]))
+    {
+        for(int j = 0; j < CHARS_NUM; j++)
+        {
+            mat[currState][j] = -1;
+        }
+    }
+
     freeState++;
 }
 
@@ -70,7 +91,7 @@ bool DFA::writeToFile(const std::string &path)
     {
         for (int j = 0; j < CHARS_NUM; j++)
         {
-            file << this->mat[i][j] << ",";
+            file << this->mat[i][j] << ',';
         }
         file << "\n";
     }
@@ -87,14 +108,14 @@ bool DFA::readFromFile(const std::string &path)
 
     if (!file.is_open())
     {
-        std::cerr << "Error opening file" << std::endl;
-        exit(1);
+        std::cerr << "Creating dfa file..." << std::endl;
+        return false;
     }
 
     while (file)
     {
         char ch = file.get();
-        if (ch != '\n')
+        if (ch != '\n' && ch!= ',')
         {
             for (i = 0; i < NUM_OF_STATES; i++)
             {
@@ -111,6 +132,9 @@ bool DFA::readFromFile(const std::string &path)
 
 void DFA::makeDFA()
 {
+    for (size_t i = 0; i < NUM_OF_STATES; i++)
+    for (int j = 0; j < CHARS_NUM; j++)
+        this->mat[i][j] = -1;
 
     // Conditions
     addTokens("if");
@@ -150,4 +174,9 @@ void DFA::makeDFA()
     addTokens("\"");
     addTokens("(");
     addTokens(")");
+    addTokens("{");
+    addTokens("}");
+
+    //return statment
+    addTokens("return");
 }

@@ -1,4 +1,5 @@
 #include "../headers/Lexer.hpp"
+#include <algorithm>
 
 Lexer::Lexer(std::string path)
 {
@@ -10,8 +11,9 @@ Lexer::Lexer(std::string path)
 void Lexer::readFromFile()
 {
     int i = 0;
+    Token tok;
     std::string skip;
-    std::string currWord = "";
+    std::string data, line;
     ifstream file;
 
     if (!file.is_open())
@@ -23,11 +25,18 @@ void Lexer::readFromFile()
         exit(1);
     }
 
+    while (std::getline(file, line)) {
+        data += line; // Append each line to the string
+    }
+    
+    //data.erase(std::remove_if(data.begin(), data.end(), ::isspace), data.end());
+
     // Analyizing each word recived from the file
     // word is a sequence of charecters whice ends with a space
-    while (file >> currWord)
+    for (i = 0; i < data.size();)
     {
-        analyze(currWord);
+        tok = analyze(data.substr(i));
+        i += tok.token.size();
     }
 
     // Printing results for debugging
@@ -39,29 +48,38 @@ void Lexer::readFromFile()
     }
 }
 
-Token Lexer::analyze(std::string currWord)
+Token Lexer::analyze(std::string data)
 {
-    int i = 0, j = 0;
+    int i = 0, tempNext = 0;
     std::string result = "";
     Token *t = new Token();
 
     int(*mat)[CHARS_NUM] = this->dfa->getMat();
 
+    int state = mat[0][data[0]];
+
     // Getting the token by stat from the matrix
     // if no matching state and finel state is posative identify as identifier
     // else identify as UNDEFINED
-    while (mat[j][currWord[i]] != -1)
-    {
+    while(state != -1)
+    {   
         // the type will be the most recent valid state
-        t->type = mat[j][currWord[i]];
-
-        result += currWord[i];
-        j = mat[j][currWord[i]];
+        t->type = state;
+        result += data[i]; 
+        
         i++;
+        state = mat[state][data[i]];
+        
     }
 
     t->token = result;
-    tokenList.push_back(*t);
+
+    if(t->token.size() > 0)
+        tokenList.push_back(*t);
+
+    else{
+        t->token += ' ';
+    }
 
     return (*t);
 }
@@ -73,82 +91,101 @@ std::string Lexer::returnTokenString(int code)
     {
         case ID_INT:
             return "INT";
-            break;
+
+
+        case ID_NUMBER:
+            return "NUMBER";
 
         case ID_CHAR:
             return "CHAR";
-            break;
+
+        case ID_BOOL:
+            return "BOOL";
+
+        case ID_VOID:
+            return "VOID";
 
         case ID_IF_CONDITION:
             return "IF_CONDITION";
-            break;
+
 
         case ID_ELSE_CONDITION:
             return "ELSE_CONDITION";
-            break;
+
 
         case ID_WHILE_LOOP:
             return "WHILE_LOOP";
-            break;
+
+        case ID_FOR_LOOP:
+            return "FOR_LOOP";
 
         case EQUAL:
             return "EQUAL";
-            break;
+
 
         case BIGEER_EQUAL:
             return "BIGEER_EQUAL";
-            break;
+
 
         case SMALLER_EQUAL:
             return "SMALLER_EQUAL";
-            break;
+
 
         case BINOP_PLUS:
             return "BINOP_PLUS";
-            break;
+
 
         case BINOP_DIV:
             return "BINOP_DIV";
-            break;
+
 
         case BINOP_MINUS:
             return "BINOP_MINUS";
-            break;
+
 
         case BINOP_MULT:
             return "BINOP_MULT";
-            break;
+
 
         case BINOP_AND:
             return "BINOP_AND";
-            break;
+
 
         case LOGIC_AND:
             return "LOGIC_AND";
-            break;
+
 
         case LOGIC_OR:
             return "LOGIC_OR";
-            break;
+
 
         case DEFINE_VAR:
             return "DEFINE_VAR";
-            break;
 
-        case LBRACE:
-            return "LEFT_BRACKET";
-            break;
+
+        case LPARAN:
+            return "LEFT_PARAN";
+
+
+        case RPARAN:
+            return "RIGHT_PARAN";
 
         case RBRACE:
-            return "RIGHT_BRACKET";
-            break;
+            return "RIGHT_BRACE";
+
+        case LBRACE:
+            return "LEFT_BRACE";
+
+        case ID_RETURN:
+            return "ID_RETURN";
+
 
         case -1:
             return "NO SUCH TOKEN";
-            break;
+
 
         default:
             return "IDENTIFIER";
-            break;
+
     }
 }
