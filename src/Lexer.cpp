@@ -1,11 +1,9 @@
 #include "../headers/Lexer.hpp"
-#include <algorithm>
 
 Lexer::Lexer(std::string path)
 {
     this->path = path;
-    if (!this->dfa)
-        this->dfa = new DFA();
+    this->dfa = new DFA();
 }
 
 void Lexer::readFromFile()
@@ -21,7 +19,7 @@ void Lexer::readFromFile()
 
     if (!file.is_open())
     {
-        std::cout << "error opening file :(" << std::endl;
+        std::cout << "error opening code file" << std::endl;
         exit(1);
     }
 
@@ -29,8 +27,6 @@ void Lexer::readFromFile()
         data += line; // Append each line to the string
     }
     
-    //data.erase(std::remove_if(data.begin(), data.end(), ::isspace), data.end());
-
     // Analyizing each word recived from the file
     // word is a sequence of charecters whice ends with a space
     for (i = 0; i < data.size();)
@@ -40,12 +36,12 @@ void Lexer::readFromFile()
     }
 
     // Printing results for debugging
-    for (Token token : this->tokenList)
-    {
-        std::cout << token.token << " ";
-        std::cout << returnTokenString(token.type) << " ";
-        std::cout << to_string(token.type) << std::endl;
-    }
+    // for (Token token : this->tokenList)
+    // {
+    //     std::cout << token.token << " ";
+    //     std::cout << returnTokenString(token.type) << " ";
+    //     std::cout << to_string(token.type) << std::endl;
+    // }
 }
 
 Token Lexer::analyze(std::string data)
