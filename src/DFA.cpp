@@ -179,4 +179,8 @@ void DFA::makeDFA()
 
     //return statment
     addTokens("return");
+
+    //true and false
+    addTokens("true");
+    addTokens("false");
 }

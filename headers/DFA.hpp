@@ -4,7 +4,7 @@
 #include <fstream>
 
 #define CHARS_NUM 128
-#define NUM_OF_STATES 100
+#define NUM_OF_STATES 128
 
 class DFA
 {

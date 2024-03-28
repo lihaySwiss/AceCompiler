@@ -1,1 +1,12 @@
-(bolbol )
+if (cock == big)
+{
+    return true
+}
+else{
+    x := 23%2
+    while(1)
+    {
+        x++
+    }
+    
+}

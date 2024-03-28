@@ -11,6 +11,7 @@ int main(int argc, char const * argv[]) {
 
     Parser *parser = new Parser();
     parser->setInputList(lexer->getTokenList());
+    parser->readFile();
 
     return 0;
 }
